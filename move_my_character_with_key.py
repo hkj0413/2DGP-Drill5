@@ -53,6 +53,7 @@ MoveRight = True
 MoveFront = True
 StandRight = True
 StandFront = True
+
 state = 3
 x = 800 // 2
 y = 600 // 2
