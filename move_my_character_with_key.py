@@ -5,7 +5,7 @@ ground = load_image('TUK_GROUND.png')
 character = load_image('fox.png')
 
 def handle_events():
-    global running, dir, MoveRight
+    global running, dir, x, MoveRight, MoveFront, StandRight, StandFront, state
 
     events = get_events()
     for event in events:
@@ -15,20 +15,31 @@ def handle_events():
             if event.key == SDLK_RIGHT:
                 dir += 1
                 MoveRight = True
+                state = 1
             elif event.key == SDLK_LEFT:
                 dir -= 1
                 MoveRight = False
+                state = 1
             elif event.key == SDLK_ESCAPE:
                 running = False
         elif event.type == SDL_KEYUP:
             if event.key == SDLK_RIGHT:
                 dir -= 1
+                StandRight = True
+                state = 3
             elif event.key == SDLK_LEFT:
                 dir += 1
+                StandRight = False
+                state = 3
 
 running = True
 MoveRight = True
+MoveFront = True
+StandRight = True
+StandFront = True
+state = 3
 x = 800 // 2
+y = 600 // 2
 frame = 0
 dir = 0
 
@@ -36,16 +47,32 @@ while running:
     clear_canvas()
     ground.draw(400, 300, 800, 600)
 
-    if MoveRight == True:
-        character.clip_draw(frame * 100, 100, 100, 100, x, 90)
-    elif MoveRight == False:
-        character.clip_composite_draw(frame * 100, 100, 100, 100, 0, 'h', x, 90, 100, 100)
+    if MoveRight == True and state == 1:
+        character.clip_draw(frame * 30 + 4, 157, 30, 30, x, y, 90, 90)
+
+    elif MoveRight == False and state == 1:
+        character.clip_composite_draw(frame * 30 + 4, 157, 30, 30, 0, 'h' , x, y, 90, 90)
+
+    if StandRight == True and state == 3:
+        character.clip_draw(frame * 30 + 131, 90, 30, 30, x, y, 90, 90)
+
+    elif StandRight == False and state == 3:
+        character.clip_composite_draw(frame * 30 + 131, 90, 30, 30, 0, 'h' , x, y, 90, 90)
 
     update_canvas()
     handle_events()
-    frame = (frame + 1) % 8
-    x += dir * 5
-    delay(0.05)
+
+    if state == 1:
+        frame = (frame + 1) % 3
+    elif state == 3:
+        frame = (frame + 1) % 2
+
+    if x < 760 and MoveRight == True and state == 1:
+        x += dir * 10
+    elif x > 40 and MoveRight == False and state == 1:
+        x += dir * 10
+
+    delay(0.1)
 
 close_canvas()
 
